@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pastel Stopwatch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa&family=Quicksand&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Quicksand', sans-serif;
+    }
+    body {
+      background: linear-gradient(145deg, #edf2f7, #e0e5ea);
+      background-image: url(https://i.pinimg.com/736x/87/0e/a9/870ea9ac4fef31c40b2253c6a6fe1b10.jpg);
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .container {
+      background: rgba(248, 249, 250, 0.3);
+      border-radius: 2rem;
+      padding: 2rem;
+      box-shadow: 8px 8px 20px #ccc;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    .time {
+      font-size: 4rem;
+      font-weight: 900;
+      color: #555;
+      margin-bottom: 1rem;
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 2px #bbbbbb;
+    }
+    .buttons button {
+      margin: 0.4rem;
+      padding: 0.7rem 1.2rem;
+      border: none;
+      border-radius: 2rem;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+      box-shadow: 3px 3px 8px #e0e0e0;
+    }
+    .buttons button:hover {
+      transform: scale(1.10);
+    }
+    .start { background: #c8e6c9; color: #2e7d32; }
+    .pause { background: #d1c4e9; color: #4527a0; }
+    .reset { background: #ffcdd2; color: #b71c1c; }
+    .lap { background: #fff9c4; color: #f57f17; }
+
+    .laps {
+      margin-top: 1.5rem;
+      max-height: 200px;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+    }
+    .lap-entry {
+      background: #f1f8e9;
+      margin-bottom: 0.5rem;
+      padding: 0.6rem 1rem;
+      border-radius: 1.2rem;
+      box-shadow: 2px 2px 6px #ccc;
+      animation: fadeIn 0.4s ease-in;
+    }
+    .lap-entry:nth-child(even) { background: #e1f5fe; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="time" id="display">00:00:00</div>
+    <div class="buttons">
+      <button class="start" onclick="startTimer()">▶️ Start</button>
+      <button class="pause" onclick="pauseTimer()">⏸️ Pause</button>
+      <button class="reset" onclick="resetTimer()">🔄 Reset</button>
+      <button class="lap" onclick="recordLap()">🏁 Lap</button>
+    </div>
+    <div class="laps" id="laps"></div>
+  </div>
+
+  <script>
+    let startTime = 0, interval, elapsed = 0;
+
+    function startTimer() {
+      if (!interval) {
+        startTime = Date.now() - elapsed;
+        interval = setInterval(updateTime, 100);
+      }
+    }
+
+    function pauseTimer() {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    }
+
+    function resetTimer() {
+      clearInterval(interval);
+      interval = null;
+      startTime = 0;
+      elapsed = 0;
+      document.getElementById('display').textContent = '00:00:00';
+      document.getElementById('laps').innerHTML = '';
+    }
+
+    function updateTime() {
+      elapsed = Date.now() - startTime;
+      let total = Math.floor(elapsed / 10);
+      let ms = total % 100;
+      let s = Math.floor(total / 100) % 60;
+      let m = Math.floor(total / 6000);
+      document.getElementById('display').textContent = 
+        `${pad(m)}:${pad(s)}:${pad(ms)}`;
+    }
+
+    function pad(num) {
+      return num.toString().padStart(2, '0');
+    }
+
+    function recordLap() {
+      if (!interval) return;
+      const lapsDiv = document.getElementById('laps');
+      const newLap = document.createElement('div');
+      newLap.className = 'lap-entry';
+      newLap.textContent = `Lap ${lapsDiv.children.length + 1}: ${document.getElementById('display').textContent}`;
+      lapsDiv.prepend(newLap);
+    }
+  </script>
+</body>
+</html>
